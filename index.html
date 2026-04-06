@@ -48,6 +48,19 @@
             top: 0;
             z-index: 100;
             backdrop-filter: blur(0px);
+            transition: transform 0.35s ease, box-shadow 0.35s ease;
+            will-change: transform;
+        }
+
+        header.header-scroll-hidden {
+            transform: translateY(-100%);
+            box-shadow: none;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            header {
+                transition: none;
+            }
         }
 
         .navbar {
@@ -937,10 +950,14 @@
     }
     const hamburger = document.getElementById('hamburger');
     const navLinks = document.querySelector('.nav-links');
+    const siteHeader = document.querySelector('header');
 
     function setMenuOpen(isOpen) {
         navLinks.classList.toggle('active', isOpen);
         document.body.classList.toggle('nav-open', isOpen);
+        if (siteHeader && isOpen) {
+            siteHeader.classList.remove('header-scroll-hidden');
+        }
         hamburger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
         hamburger.setAttribute('aria-label', isOpen ? 'Zapri meni' : 'Odpri meni');
         hamburger.textContent = isOpen ? '×' : '☰';
@@ -980,6 +997,28 @@
             setMenuOpen(false);
         });
     });
+
+    // Skrij glavo ob pomiku navzdol, prikaži ob pomiku navzgor
+    let lastScrollY = window.scrollY;
+    const scrollHideAfter = 72;
+
+    window.addEventListener('scroll', function() {
+        if (!siteHeader) return;
+        if (document.body.classList.contains('nav-open')) {
+            siteHeader.classList.remove('header-scroll-hidden');
+            lastScrollY = window.scrollY;
+            return;
+        }
+        const y = window.scrollY;
+        if (y < scrollHideAfter) {
+            siteHeader.classList.remove('header-scroll-hidden');
+        } else if (y > lastScrollY) {
+            siteHeader.classList.add('header-scroll-hidden');
+        } else {
+            siteHeader.classList.remove('header-scroll-hidden');
+        }
+        lastScrollY = y;
+    }, { passive: true });
 </script>
 </body>
 </html>
