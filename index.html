@@ -998,27 +998,25 @@
         });
     });
 
-    // Skrij glavo ob pomiku navzdol, prikaži ob pomiku navzgor
-    let lastScrollY = window.scrollY;
-    const scrollHideAfter = 72;
+    // Glava: skrita po prvem pomiku; vidna samo na samem vrhu strani
+    const scrollTopThreshold = 8;
 
-    window.addEventListener('scroll', function() {
+    function syncHeaderScroll() {
         if (!siteHeader) return;
         if (document.body.classList.contains('nav-open')) {
             siteHeader.classList.remove('header-scroll-hidden');
-            lastScrollY = window.scrollY;
             return;
         }
         const y = window.scrollY;
-        if (y < scrollHideAfter) {
+        if (y <= scrollTopThreshold) {
             siteHeader.classList.remove('header-scroll-hidden');
-        } else if (y > lastScrollY) {
-            siteHeader.classList.add('header-scroll-hidden');
         } else {
-            siteHeader.classList.remove('header-scroll-hidden');
+            siteHeader.classList.add('header-scroll-hidden');
         }
-        lastScrollY = y;
-    }, { passive: true });
+    }
+
+    window.addEventListener('scroll', syncHeaderScroll, { passive: true });
+    syncHeaderScroll();
 </script>
 </body>
 </html>
